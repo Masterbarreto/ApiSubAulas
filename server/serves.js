@@ -77,4 +77,5 @@ server.listen(PORT, () => {
     console.log(chalk.green(`Sistema 💻 : Servidor rodando na porta ${PORT}`));
 });
 
-export { server, sessions };
+// Export the server as the default export
+export default server;

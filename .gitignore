@@ -36,3 +36,4 @@ coverage/
 # Outros
 *.bak
 *.tmp
+.vercel
