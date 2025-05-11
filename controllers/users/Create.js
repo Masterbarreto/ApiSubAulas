@@ -1,7 +1,7 @@
 import yup from 'yup';
 import chalk from 'chalk'; 
 import bcrypt from 'bcrypt'; 
-import { sessions } from "../../server/serves.js"; 
+import { sessions } from "../../db.js"; 
 
 // Criar o Usuario no MongoDB
 export const createUser = async (req, res) => {
