@@ -1,14 +1,13 @@
 {
   "name": "api-mongo",
   "version": "1.0.0",
-  "description": "Api do Sistema de Subistituição de Aulas ",
+  "description": "Api do Sistema de Substituição de Aulas",
   "license": "ISC",
   "author": "@Pedro Henrique Vieira Barreto",
   "type": "module",
-  "main": "index.js",
+  "main": "api/server/serves.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ./server/serves.js"
+    "start": "node api/server/serves.js"
   },
   "dependencies": {
     "api-mongo": "file:",
@@ -22,7 +21,6 @@
     "http-status-codes": "^2.3.0",
     "mongodb": "^6.16.0",
     "morgan": "^1.10.0",
-    "path": "^0.12.7",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "yup": "^1.6.1"

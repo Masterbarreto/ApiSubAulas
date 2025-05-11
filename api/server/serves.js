@@ -8,9 +8,9 @@ import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import { StatusCodes } from "http-status-codes";
 import chalk from "chalk";
-import session from "express-session"; 
-import MongoStore from "connect-mongo"; 
-import { getDb } from "../db.js"; 
+import session from "express-session";
+import MongoStore from "connect-mongo";
+import { getDb } from "../db.js";
 
 const server = express();
 
@@ -74,7 +74,8 @@ server.use((req, res) => {
     });
 });
 
-// Exporta o handler para o Vercel
-export default function handler(req, res) {
-    server(req, res);
-}
+// Inicia o servidor no Render
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+    console.log(chalk.green(`Sistema 💻 : Servidor rodando na porta ${PORT}`));
+});
