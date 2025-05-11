@@ -1,26 +1,25 @@
+// filepath: api-mongo/api/controllers/users/ResetPassword.js
 import { ObjectId } from "mongodb";
-import { sessions } from "../../db.js"; 
+import { getDb } from "../../db.js";
+import bcrypt from "bcrypt"; 
 import chalk from "chalk";
 
-async function ResetPassWord(req, res) { // Adicionado req e res como parâmetros
+async function ResetPassWord(req, res) {
     const { userId, newPassword } = req.body;
-    const db = sessions[process.env.DB_NAME];
-    const usersCollection = db.collection("users");
+    const db = await getDb();
+    const usersCollection = db.collection("professores");
 
     try {
-        // Verifica se o usuário existe
         const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
         if (!user) {
             return res.status(404).json({ error: "Usuário não encontrado" });
         }
 
-        // Criptografa a nova senha antes de salvar no banco
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-        // Atualiza a senha do usuário
         await usersCollection.updateOne(
             { _id: new ObjectId(userId) },
-            { $set: { password: hashedPassword } } // Salva a senha criptografada
+            { $set: { password: hashedPassword } }
         );
 
         console.log(chalk.green(`Sistema 💻 : Senha atualizada com sucesso para o usuário: ${userId} `));

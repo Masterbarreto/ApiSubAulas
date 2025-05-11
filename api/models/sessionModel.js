@@ -1,3 +1,4 @@
+// filepath: d:\Projeto de Aulas\api Mongo\api\models\sessionModel.js
 import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 

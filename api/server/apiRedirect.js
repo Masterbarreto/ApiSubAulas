@@ -1,37 +1,23 @@
+// filepath: d:\Projeto de Aulas\api Mongo\api\index.js
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import path from "node:path";
-import { MongoClient } from "mongodb";
+import apiRedirect from "./routes/index.js";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import apiRedirect from "../routes/index.js";
 import { StatusCodes } from "http-status-codes";
 import chalk from "chalk";
 
 const server = express();
 
 server.use(morgan("dev"));
-server.use(cors({
-    origin: ["*"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-}));
-
-// MongoDB connection
-const sessions = {};
-MongoClient.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(client => {
-        const db = client.db(process.env.DB_NAME);
-        sessions[process.env.DB_NAME] = db;
-        console.log(chalk.blue.bold("Sistema 💻 : Conectado ao MongoDB com sucesso!"));
-    })
-    .catch(err => console.error(chalk.red("Sistema 💻 : Erro ao conectar ao MongoDB", err)));
-
+server.use(cors());
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 
+// Rotas da API
 server.use("/api/v1", apiRedirect);
 server.use("/pages", express.static(path.resolve("./public/pages")));
 
@@ -61,7 +47,7 @@ const specs = swaggerJsdoc(options);
 server.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // 404 Error Handler
-server.use((req, res, next) => {
+server.use((req, res) => {
     console.log(chalk.yellow("Sistema 💻 : Rota não encontrada"));
     return res.status(StatusCodes.NOT_FOUND).json({
         error: {
@@ -71,7 +57,7 @@ server.use((req, res, next) => {
     });
 });
 
-// Export the server as the default export
+// Exporta o handler para o Vercel
 export default function handler(req, res) {
-    return server(req, res);
+    server(req, res);
 }

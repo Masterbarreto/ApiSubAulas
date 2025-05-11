@@ -1,6 +1,7 @@
+// filepath: api/routes/users.js
 import express from "express";
 import { loginUser } from "../controllers/users/Login.js";
-import {createUser} from "../controllers/users/Create.js";
+import { createUser } from "../controllers/users/Create.js";
 import { logoutUser } from "../controllers/users/Logout.js";
 import { logUserActivity, getUserActivities } from "../controllers/users/UserActivity.js";
 import { ResetPassWord } from "../controllers/users/ResetPassword.js"; 
@@ -23,6 +24,6 @@ router.post("/activity", logUserActivity);
 router.get("/activity/:userId", getUserActivities);
 
 // Route for password reset
-router.post("/reset-password", ResetPassWord); // Adiciona a rota para troca de senha
+router.post("/reset-password", ResetPassWord);
 
 export default router;

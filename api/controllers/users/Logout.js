@@ -1,11 +1,12 @@
-import { sessions } from "../../db.js"; 
+// filepath: d:\Projeto de Aulas\api Mongo\api\controllers\users\Logout.js
+import { getDb } from "../../db.js";
 import { ObjectId } from "mongodb";
 import chalk from "chalk";
 
 async function logoutUser(req, res) {
     const { id } = req.params;
-    const db = sessions[process.env.DB_NAME];
-    const sessionCollection = db.collection("sessions"); // Assuming a sessions collection exists
+    const db = await getDb();
+    const sessionCollection = db.collection("sessions"); 
     try {
         const result = await sessionCollection.deleteOne({ userId: new ObjectId(id) });
         if (result.deletedCount === 0) {
