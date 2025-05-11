@@ -2,11 +2,11 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
-import path from "path";
+import path from "node:path";
 import { MongoClient } from "mongodb";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import apiRedirect from "../routes/index.js"; // Corrected import for routes
+import apiRedirect from "../routes/index.js";
 import { StatusCodes } from "http-status-codes";
 import chalk from "chalk";
 
@@ -71,11 +71,7 @@ server.use((req, res, next) => {
     });
 });
 
-// Start the server
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-    console.log(chalk.green(`Sistema 💻 : Servidor rodando na porta ${PORT}`));
-});
-
 // Export the server as the default export
-export default server;
+export default function handler(req, res) {
+    return server(req, res);
+}
