@@ -33,7 +33,10 @@ export async function loginUser(req, res) {
         }
 
         console.log(chalk.green(`Sistema 💻 : Login bem-sucedido: ${user._id}`));
-        return res.status(200).json({ message: "Login bem-sucedido ✅", userId: user._id });
+        return res.status(200).json({ message: "Login bem-sucedido ✅",
+            userId: user._id ,
+            cargo: user.cargo,
+        });
     } catch (error) {
         console.log(chalk.red(`Sistema 💻 : Erro ao fazer login: ${error.message} ❌`));
         return res.status(500).json({ error: "Erro interno no servidor" });
