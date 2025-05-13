@@ -1,32 +1,38 @@
 // filepath: api-mongo/api/controllers/users/ResetPassword.js
-import { ObjectId } from "mongodb";
 import { getDb } from "../../db.js";
-import bcrypt from "bcrypt"; 
+import bcrypt from "bcrypt";
 import chalk from "chalk";
 
 async function ResetPassWord(req, res) {
-    const { userId, newPassword } = req.body;
-    const db = await getDb();
-    const usersCollection = db.collection("professores");
+    const { email, code, newPassword } = req.body;
 
     try {
-        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+        const db = await getDb();
+        const usersCollection = db.collection("professores");
+
+        // Verifica se o usuário existe
+        const user = await usersCollection.findOne({ email });
         if (!user) {
-            return res.status(404).json({ error: "Usuário não encontrado" });
+            return res.status(404).json({ error: "Usuário não encontrado." });
         }
 
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        // Verifica se o código de redefinição é válido
+        if (user.resetCode !== code) {
+            return res.status(400).json({ error: "Código de redefinição inválido." });
+        }
 
+        // Atualiza a senha do usuário
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
         await usersCollection.updateOne(
-            { _id: new ObjectId(userId) },
-            { $set: { password: hashedPassword } }
+            { email },
+            { $set: { password: hashedPassword }, $unset: { resetCode: "" } }
         );
 
-        console.log(chalk.green(`Sistema 💻 : Senha atualizada com sucesso para o usuário: ${userId} `));
-        return res.status(200).json({ message: "Senha atualizada com sucesso" });
+        console.log(chalk.green(`Sistema 💻 : Senha atualizada com sucesso para o usuário: ${email}`));
+        return res.status(200).json({ message: "Senha redefinida com sucesso!" });
     } catch (error) {
-        console.error("Sistema 💻 : Erro ao atualizar a senha do usuário:", error);
-        return res.status(500).json({ error: "Erro interno no servidor" });
+        console.error("Sistema 💻 : Erro ao redefinir a senha:", error);
+        return res.status(500).json({ error: "Erro interno no servidor." });
     }
 }
 

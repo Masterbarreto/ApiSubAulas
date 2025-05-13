@@ -5,6 +5,8 @@ import { createUser } from "../controllers/users/Create.js";
 import { logoutUser } from "../controllers/users/Logout.js";
 import { logUserActivity, getUserActivities } from "../controllers/users/UserActivity.js";
 import { ResetPassWord } from "../controllers/users/ResetPassword.js"; 
+import { verifyUser } from "../controllers/users/Verify.js";
+import { requestPasswordReset } from "../controllers/users/PasswordReset.js";
 
 const router = express.Router();
 
@@ -24,6 +26,10 @@ router.post("/activity", logUserActivity);
 router.get("/activity/:userId", getUserActivities);
 
 // Route for password reset
+router.post("/verify", verifyUser);
+
+router.post("/request-password-reset", requestPasswordReset);
+// Route for resetting password
 router.post("/reset-password", ResetPassWord);
 
 export default router;

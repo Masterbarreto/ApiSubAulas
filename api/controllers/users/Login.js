@@ -12,18 +12,23 @@ const loginSchema = yup.object().shape({
 
 // Rota de login
 export async function loginUser(req, res) {
-    const { email, password } = req.body;
+    const { email, password ,isVerified } = req.body;
     const db = await getDb();
-    const professoresCollection = db.collection("professores"); // Corrigido: Declaração da coleção
+    const professoresCollection = db.collection("professores");
 
     try {
         // Valida os dados recebidos
-        await loginSchema.validate({ email, password });
+        await loginSchema.validate({ email, password, isVerified });
 
         // Busca o usuário pelo email
-        const user = await professoresCollection.findOne({ email }); // Corrigido: Uso da coleção correta
+        const user = await professoresCollection.findOne({ email });
         if (!user) {
             return res.status(401).json({ message: "Credenciais inválidas" });
+        }
+
+        // Verifica se o usuário está validado
+        if (!user.isVerified) {
+            return res.status(403).json({ message: "Conta não verificada. Verifique seu e-mail." });
         }
 
         // Compara a senha fornecida com a senha armazenada
@@ -33,8 +38,9 @@ export async function loginUser(req, res) {
         }
 
         console.log(chalk.green(`Sistema 💻 : Login bem-sucedido: ${user._id}`));
-        return res.status(200).json({ message: "Login bem-sucedido ✅",
-            userId: user._id ,
+        return res.status(200).json({
+            message: "Login bem-sucedido ✅",
+            userId: user._id,
             cargo: user.cargo,
         });
     } catch (error) {
