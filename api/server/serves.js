@@ -78,3 +78,11 @@ getDb().then((db) => {
         console.log(chalk.green(`Sistema 💻 : Servidor rodando na porta ${PORT}`));
     });
 });
+
+// Ping automático para evitar que o Render durma
+const PING_URL = process.env.PING_URL || "https://SEU_DOMINIO_RENDER.onrender.com/api/v1/aulas/MostarAulas";
+setInterval(() => {
+    fetch(PING_URL)
+        .then(() => console.log("Ping enviado para manter o Render acordado"))
+        .catch(() => console.log("Falha ao enviar ping (Render pode estar dormindo)"));
+}, 1000 * 60 * 14); // a cada 14 minutos (menos que 15 para garantir)

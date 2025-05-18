@@ -3,7 +3,7 @@ import express from 'express';
 import upload from '../Middleware/upload.js'; // Corrigido o path e o nome do diretório
 import { createAula } from '../controllers/Aulas/CreateAulas.js'; // Corrigido o nome do arquivo
 import { getPdf } from '../controllers/Aulas/getPdf.js';// Corrigido o nome do arquivo
-import { getAulas } from '../controllers/Aulas/getAulas.js';
+import { getAulas } from '../controllers/Aulas/getAulas.js'; // Corrigido o nome do arquivo
 import { concluirAula } from '../controllers/Aulas/concluirAula.js';
 import { getAulasConcluidas } from '../controllers/Aulas/getAulasConcluidas.js';
 import { EditarAula } from '../controllers/Aulas/EditarAulas.js';
