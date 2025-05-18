@@ -80,7 +80,7 @@ getDb().then((db) => {
 });
 
 // Ping automático para evitar que o Render durma
-const PING_URL = process.env.PING_URL || "https://SEU_DOMINIO_RENDER.onrender.com/api/v1/aulas/MostarAulas";
+const PING_URL = process.env.PING_URL || "https://apisubaulas.onrender.com/api/v1/aulas/MostarAulas";
 setInterval(() => {
     fetch(PING_URL)
         .then(() => console.log("Ping enviado para manter o Render acordado"))
