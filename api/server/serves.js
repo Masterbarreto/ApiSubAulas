@@ -20,62 +20,61 @@ server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 
 // Configuração de Sessões
-(async () => {
-    const db = await getDb(); // Obtém a conexão com o banco de dados
+getDb().then((db) => {
     server.use(
         session({
-            secret: process.env.SESSION_SECRET || "default_secret", // Use uma variável de ambiente para o segredo
+            secret: process.env.SESSION_SECRET || "default_secret",
             resave: false,
             saveUninitialized: false,
-            store: MongoStore.create({ client: db.client }), // Configura o MongoStore com o cliente do MongoDB
-            cookie: { secure: false, sameSite: "lax" }, // Ajuste conforme o ambiente (secure: true para produção com HTTPS)
+            store: MongoStore.create({ client: db.client }),
+            cookie: { secure: false, sameSite: "lax" },
         })
     );
-})();
 
-// Rotas da API
-server.use("/api/v1", apiRedirect);
-server.use("/pages", express.static(path.resolve("./public/pages")));
-server.use("/assets", express.static(path.resolve("./public/assets")));
+    // Rotas da API
+    server.use("/api/v1", apiRedirect);
+    server.use("/pages", express.static(path.resolve("./public/pages")));
+    server.use("/assets", express.static(path.resolve("./public/assets")));
 
-// Swagger Documentation
-const options = {
-    definition: {
-        openapi: "3.1.0",
-        info: {
-            title: "Guarda meu lanche Api",
-            version: "0.1.0",
-            description: "Uma simples documentação da nossa api.",
-            contact: {
-                name: "Master Barreto",
-                url: "https://github.com/MasterBarreto",
+    // Swagger Documentation
+    const options = {
+        definition: {
+            openapi: "3.1.0",
+            info: {
+                title: "subAulas API",
+                version: "0.1.0",
+                description: "Uma simples documentação da nossa api.",
+                contact: {
+                    name: "Master Barreto",
+                    url: "https://github.com/MasterBarreto",
+                },
             },
+            servers: [
+                {
+                    url: "http://localhost:3000",
+                },
+            ],
         },
-        servers: [
-            {
-                url: "http://localhost:3000",
+        apis: ["./controllers/*/*.js", "./routes/*.js"],
+    };
+
+    const specs = swaggerJsdoc(options);
+    server.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
+
+    // 404 Error Handler
+    server.use((req, res) => {
+        console.log(chalk.yellow("Sistema 💻 : Rota não encontrada"));
+        return res.status(StatusCodes.NOT_FOUND).json({
+            error: {
+                message: "Not Found",
+                status: StatusCodes.NOT_FOUND,
             },
-        ],
-    },
-    apis: ["./controllers/*/*.js", "./routes/*.js"],
-};
-
-const specs = swaggerJsdoc(options);
-server.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
-
-// 404 Error Handler
-server.use((req, res) => {
-    console.log(chalk.yellow("Sistema 💻 : Rota não encontrada"));
-    return res.status(StatusCodes.NOT_FOUND).json({
-        error: {
-            message: "Not Found",
-            status: StatusCodes.NOT_FOUND,
-        },
+        });
     });
-});
 
-// Inicia o servidor no Render
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-    console.log(chalk.green(`Sistema 💻 : Servidor rodando na porta ${PORT}`));
+    // Inicia o servidor
+    const PORT = process.env.PORT || 3000;
+    server.listen(PORT, () => {
+        console.log(chalk.green(`Sistema 💻 : Servidor rodando na porta ${PORT}`));
+    });
 });
