@@ -7,6 +7,7 @@ import { getAulas } from '../controllers/Aulas/getAulas.js'; // Corrigido o nome
 import { concluirAula } from '../controllers/Aulas/concluirAula.js';
 import { getAulasConcluidas } from '../controllers/Aulas/getAulasConcluidas.js';
 import { EditarAula } from '../controllers/Aulas/EditarAulas.js';
+import { getAulaById } from "../controllers/Aulas/AulaSele.js";
 
 const router = express.Router();
 
@@ -16,8 +17,8 @@ router.post('/', upload.any(), createAula);
 // GET /api/v1/aulas/:id/pdf
 router.get('/:id/pdf', getPdf);
 
-// GET /api/v1/aulas/MostarAulas
-
+// GET /api/v1/aulas/MostarAula
+router.get("/aula-id/:id", getAulaById);
 
 // PATCH para concluir aula
 router.patch('/:id/concluir', concluirAula);
