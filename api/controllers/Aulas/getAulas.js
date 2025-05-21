@@ -6,9 +6,13 @@ export const getAulas = async (req, res) => {
         const aulas = await db.collection('aulas').find({ concluida: false }).toArray();
         const resultado = aulas.map(aula => ({
             _id: aula._id,
-            titulo: aula.titulo,  
-            Horario: aula.Horario,    // Corrija para "titulo" se no banco não tem acento
-            DesAula: aula.DesAula     // Descrição da aula
+            titulo: aula.titulo,
+            Horario: aula.Horario,
+            DesAula: aula.DesAula,
+            anoEscolar: aula.anoEscolar,
+            curso: aula.curso,
+            Turma: aula.Turma,
+            Materia: aula.Materia
         }));
         res.status(200).json(resultado);
     } catch (err) {
