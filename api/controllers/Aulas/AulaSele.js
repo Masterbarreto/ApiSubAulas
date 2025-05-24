@@ -7,6 +7,7 @@ export const getAulaById = async (req, res) => {
     try {
         const db = await getDb();
         const aulas = db.collection('aulas');
+        const arquivosCol = db.collection('arquivosAulas');
 
         let aula;
         try {
@@ -19,14 +20,28 @@ export const getAulaById = async (req, res) => {
             return res.status(404).json({ message: "Aula não encontrada." });
         }
 
-        const { arquivos, ...outrosCampos } = aula;
+        // Busca os metadados dos arquivos usando arquivosIds
+        let arquivos = [];
+        if (aula.arquivosIds && aula.arquivosIds.length > 0) {
+            const arquivosDocs = await arquivosCol.find({
+                _id: { $in: aula.arquivosIds.map(id => new ObjectId(id)) }
+            }).toArray();
 
-        // Retorna o mesmo padrão da criação
+            arquivos = arquivosDocs.map(arq => ({
+                arquivosIds: [arq._id],
+                nome: arq.nome,
+                mimetype: arq.mimetype
+            }));
+        }
+
+        const { arquivos: _, ...outrosCampos } = aula;
+
         return res.status(200).json({
             aulaId: aula._id,
             arquivosIds: aula.arquivosIds || [],
-            createdAt: new Date(),
-            ...outrosCampos // inclui todos os outros campos da aula
+            arquivos, // agora vem no formato desejado
+            createdAt: aula.createdAt,
+            ...outrosCampos
         });
     } catch (err) {
         console.error('Erro ao buscar aula:', err);
