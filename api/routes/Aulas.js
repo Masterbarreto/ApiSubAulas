@@ -8,6 +8,7 @@ import { concluirAula } from '../controllers/Aulas/concluirAula.js';
 import { getAulasConcluidas } from '../controllers/Aulas/getAulasConcluidas.js';
 import { EditarAula } from '../controllers/Aulas/EditarAulas.js';
 import { getAulaById } from "../controllers/Aulas/AulaSele.js";
+import {NaoAula} from "../controllers/Aulas/DesconcluirAula.js";
 
 const router = express.Router();
 
@@ -22,6 +23,9 @@ router.get("/aula-id/:id", getAulaById);
 
 // PATCH para concluir aula
 router.patch('/:id/concluir', concluirAula);
+
+// PATCH para desfazer conclusão da aula
+router.patch('/:id/desconcluir', NaoAula);
 
 // PATCH para editar aula
 router.patch('/:id', upload.array('arquivos'), EditarAula);

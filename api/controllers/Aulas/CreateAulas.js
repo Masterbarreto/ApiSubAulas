@@ -4,15 +4,15 @@ import yup from "yup";
 export const createAula = async (req, res) => {
     const schema = yup.object().shape({
         anoEscolar: yup.string().required(),
-        curso:      yup.string().required(),
-        titulo:     yup.string().required(),
-        Turma:      yup.string().required(),
-        Materia:    yup.string().required(),
-        DayAula:    yup.string().required(),
-        Horario:    yup.string().required(),
-        DesAula:    yup.string().nullable(),
-        LinkAula:   yup.string().nullable(),
-        professor:  yup.string().required(),
+        curso: yup.string().required(),
+        titulo: yup.string().required(),
+        Turma: yup.string().required(),
+        Materia: yup.string().required(),
+        DayAula: yup.string().required(),
+        Horario: yup.string().nullable(),
+        DesAula: yup.string().nullable(),
+        LinkAula: yup.string().nullable(),
+        professor: yup.string().required(),
     });
 
     try {
