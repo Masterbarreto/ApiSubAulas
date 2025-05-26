@@ -12,7 +12,7 @@ const loginSchema = yup.object().shape({
 
 // Rota de login
 export async function loginUser(req, res) {
-    const { email, password ,isVerified } = req.body;
+    const { email, password, isVerified } = req.body;
     const db = await getDb();
     const professoresCollection = db.collection("professores");
 
@@ -42,6 +42,7 @@ export async function loginUser(req, res) {
             message: "Login bem-sucedido ✅",
             userId: user._id,
             cargo: user.cargo,
+            name: user.name || "Nome não disponível", // Inclui o nome do usuário na resposta
         });
     } catch (error) {
         console.log(chalk.red(`Sistema 💻 : Erro ao fazer login: ${error.message} ❌`));

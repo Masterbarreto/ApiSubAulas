@@ -4,14 +4,15 @@ import yup from "yup";
 export const createAula = async (req, res) => {
     const schema = yup.object().shape({
         anoEscolar: yup.string().required(),
-        titulo:     yup.string().required(),
         curso:      yup.string().required(),
+        titulo:     yup.string().required(),
         Turma:      yup.string().required(),
         Materia:    yup.string().required(),
         DayAula:    yup.string().required(),
         Horario:    yup.string().required(),
         DesAula:    yup.string().nullable(),
-        LinkAula:   yup.string().url().nullable(),
+        LinkAula:   yup.string().nullable(),
+        professor:  yup.string().required(),
     });
 
     try {
@@ -20,7 +21,10 @@ export const createAula = async (req, res) => {
         return res.status(400).json({ error: error.errors });
     }
 
-    const { anoEscolar, curso, Turma, Materia, DayAula, Horario, DesAula, LinkAula, titulo } = req.body;
+    const {
+        anoEscolar, curso, titulo, Turma, Materia,
+        DayAula, Horario, DesAula, LinkAula, professor
+    } = req.body;
     const files = req.files || [];
 
     // Metadados dos arquivos
@@ -29,7 +33,6 @@ export const createAula = async (req, res) => {
         mimetype: file.mimetype,
     }));
 
-    // Cria a aula já com arquivosIds vazio
     const aulaData = {
         anoEscolar,
         curso,
@@ -42,7 +45,8 @@ export const createAula = async (req, res) => {
         LinkAula: LinkAula || null,
         concluida: false,
         arquivos,
-        arquivosIds: []
+        arquivosIds: [],
+        professor: professor,
     };
 
     try {

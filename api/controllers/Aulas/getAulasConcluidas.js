@@ -6,9 +6,19 @@ export const getAulasConcluidas = async (req, res) => {
         const aulas = await db.collection('aulas').find({ concluida: true }).toArray();
         const resultado = aulas.map(aula => ({
             _id: aula._id,
-            título: aula.título,
+            anoEscolar: aula.anoEscolar,
+            curso: aula.curso,
+            titulo: aula.titulo,
+            Turma: aula.Turma,
+            Materia: aula.Materia,
+            DayAula: aula.DayAula,
             Horario: aula.Horario,
-            DesAula: aula.DesAula
+            DesAula: aula.DesAula,
+            LinkAula: aula.LinkAula,
+            concluida: aula.concluida,
+            arquivos: aula.arquivos || [],
+            arquivosIds: aula.arquivosIds || [],
+            professor: aula.professor,
         }));
         res.status(200).json(resultado);
     } catch (err) {

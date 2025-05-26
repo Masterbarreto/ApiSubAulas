@@ -34,14 +34,21 @@ export const getAulaById = async (req, res) => {
             }));
         }
 
-        const { arquivos: _, ...outrosCampos } = aula;
-
         return res.status(200).json({
-            aulaId: aula._id,
+            _id: aula._id,
+            anoEscolar: aula.anoEscolar,
+            curso: aula.curso,
+            titulo: aula.titulo,
+            Turma: aula.Turma,
+            Materia: aula.Materia,
+            DayAula: aula.DayAula,
+            Horario: aula.Horario,
+            DesAula: aula.DesAula,
+            LinkAula: aula.LinkAula,
+            concluida: aula.concluida,
+            arquivos,
             arquivosIds: aula.arquivosIds || [],
-            arquivos, // agora vem no formato desejado
-            createdAt: aula.createdAt,
-            ...outrosCampos
+            professor: aula.professor,
         });
     } catch (err) {
         console.error('Erro ao buscar aula:', err);
