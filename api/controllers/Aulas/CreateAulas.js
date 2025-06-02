@@ -11,7 +11,12 @@ export const createAula = async (req, res) => {
         DayAula: yup.string().required(),
         Horario: yup.string().nullable(),
         DesAula: yup.string().nullable(),
-        LinkAula: yup.string().nullable(),
+        LinkAula: yup.array().of(
+            yup.object().shape({
+                url: yup.string().url().required(),
+                name: yup.string().required(),
+            })
+        ).nullable(), // Aceita um array de links estruturados
         professor: yup.string().required(),
     });
 
@@ -42,7 +47,7 @@ export const createAula = async (req, res) => {
         DayAula,
         Horario,
         DesAula,
-        LinkAula: LinkAula || null,
+        LinkAula: LinkAula || [], // Salva os links estruturados no banco
         concluida: false,
         arquivos,
         arquivosIds: [],
