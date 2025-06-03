@@ -52,6 +52,7 @@ export const createAula = async (req, res) => {
         arquivos,
         arquivosIds: [],
         professor: professor,
+        createdAt: new Date().toISOString(), // Adiciona a data de criação no formato YYYY-MM-DD
     };
 
     try {
@@ -86,6 +87,7 @@ export const createAula = async (req, res) => {
             message: 'Aula criada com sucesso!',
             aulaId: result.insertedId,
             arquivosIds,
+            createdAt: aulaData.createdAt, // Retorna a data de criação na resposta
         });
     } catch (err) {
         console.error('Erro ao criar aula:', err);
