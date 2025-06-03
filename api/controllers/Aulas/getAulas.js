@@ -1,3 +1,5 @@
+import { getDb } from "../../db.js"; // Adicionada a importação de getDb
+
 export const getAulas = async (req, res) => {
     try {
         const db = await getDb();
