@@ -5,14 +5,14 @@ import yup from "yup";
 export const EditarAula = async (req, res) => {
     const schema = yup.object().shape({
         anoEscolar: yup.string().optional(),
-        titulo:     yup.string().optional(),
-        curso:      yup.string().optional(),
-        Turma:      yup.string().optional(),
-        Materia:    yup.string().optional(),
-        DayAula:    yup.string().optional(),
-        Horario:    yup.string().optional(),
-        DesAula:    yup.string().nullable().optional(),
-        LinkAula:   yup.string().url().nullable().optional(),
+        titulo: yup.string().optional(),
+        curso: yup.string().optional(),
+        Turma: yup.string().optional(),
+        Materia: yup.string().optional(),
+        DayAula: yup.string().optional(),
+        Horario: yup.string().optional(),
+        DesAula: yup.string().nullable().optional(),
+        LinkAula: yup.string().url().nullable().optional(),
     });
 
     try {
@@ -23,8 +23,8 @@ export const EditarAula = async (req, res) => {
 
     const { id } = req.params;
     const db = await getDb();
-    const aulas = db.collection('aulas');
-    const arquivosCol = db.collection('arquivosAulas');
+    const aulas = db.collection("aulas");
+    const arquivosCol = db.collection("arquivosAulas");
 
     // Busca a aula pelo ObjectId
     const aula = await aulas.findOne({ _id: new ObjectId(id) });
@@ -35,10 +35,13 @@ export const EditarAula = async (req, res) => {
     // Só atualiza os campos enviados
     const updateFields = { ...req.body };
 
+    // Preserva o campo createdAt ou define um novo se não existir
+    updateFields.createdAt = aula.createdAt || new Date().toISOString();
+
     // Se houver arquivos, atualize os metadados e salve os arquivos
     const files = req.files || [];
     if (files.length > 0) {
-        const arquivos = files.map(file => ({
+        const arquivos = files.map((file) => ({
             nome: file.originalname,
             mimetype: file.mimetype,
         }));

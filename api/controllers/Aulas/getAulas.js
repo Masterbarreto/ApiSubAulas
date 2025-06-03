@@ -1,5 +1,3 @@
-import { getDb } from '../../db.js';
-
 export const getAulas = async (req, res) => {
     try {
         const db = await getDb();
@@ -14,7 +12,7 @@ export const getAulas = async (req, res) => {
             curso: aula.curso,
             Turma: aula.Turma,
             Materia: aula.Materia,
-            // ...adicione outros campos se quiser
+            professor: aula.professor || "Não informado", // <-- AQUI O PULO DO GATO
         }));
         res.status(200).json(resultado);
     } catch (err) {
