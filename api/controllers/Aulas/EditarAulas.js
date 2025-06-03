@@ -12,7 +12,12 @@ export const EditarAula = async (req, res) => {
         DayAula: yup.string().optional(),
         Horario: yup.string().optional(),
         DesAula: yup.string().nullable().optional(),
-        LinkAula: yup.string().url().nullable().optional(),
+        LinkAula: yup.array().of(
+            yup.object().shape({
+                url: yup.string().url().required(),
+                name: yup.string().required(),
+            })
+        ).nullable().optional(), // Permite um array de links estruturados ou null
     });
 
     try {
