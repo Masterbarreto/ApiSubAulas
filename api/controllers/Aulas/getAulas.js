@@ -14,7 +14,6 @@ export const getAulas = async (req, res) => {
             curso: aula.curso,
             Turma: aula.Turma,
             Materia: aula.Materia,
-            createdAt: aula.createdAt || null,
             // ...adicione outros campos se quiser
         }));
         res.status(200).json(resultado);

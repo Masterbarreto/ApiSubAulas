@@ -49,6 +49,9 @@ export const getAulaById = async (req, res) => {
             arquivos,
             arquivosIds: aula.arquivosIds || [],
             professor: aula.professor,
+            createdAt: aula.createdAt
+                ? new Date(aula.createdAt).toISOString().split('T').join(' ').split('.')[0] // Formata para "YYYY-MM-DD HH:mm:ss"
+                : null,
         });
     } catch (err) {
         console.error('Erro ao buscar aula:', err);
