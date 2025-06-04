@@ -11,12 +11,29 @@ export const createAula = async (req, res) => {
         DayAula: yup.string().required(),
         Horario: yup.string().nullable(),
         DesAula: yup.string().nullable(),
-        LinkAula: yup.array().of(
-            yup.object().shape({
-                url: yup.string().url().required(),
-                name: yup.string().required(),
-            })
-        ).nullable(), // Aceita um array de links estruturados
+        LinkAula: yup.lazy(value => {
+            if (typeof value === "string") {
+                try {
+                    const parsed = JSON.parse(value);
+                    if (Array.isArray(parsed)) {
+                        return yup.array().of(
+                            yup.object().shape({
+                                url: yup.string().url().required(),
+                                name: yup.string().required(),
+                            })
+                        );
+                    }
+                } catch {
+                    return yup.string().required(); // Caso seja uma string inválida
+                }
+            }
+            return yup.array().of(
+                yup.object().shape({
+                    url: yup.string().url().required(),
+                    name: yup.string().required(),
+                })
+            ).nullable();
+        }),
         professor: yup.string().required(),
     });
 
@@ -47,7 +64,7 @@ export const createAula = async (req, res) => {
         DayAula,
         Horario,
         DesAula,
-        LinkAula: LinkAula || [], // Salva os links estruturados no banco
+        LinkAula: Array.isArray(LinkAula) ? LinkAula : [], // Garante que seja um array
         concluida: false,
         arquivos,
         arquivosIds: [],

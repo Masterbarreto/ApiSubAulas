@@ -10,14 +10,32 @@ export const EditarAula = async (req, res) => {
         Turma: yup.string().optional(),
         Materia: yup.string().optional(),
         DayAula: yup.string().optional(),
-        Horario: yup.string().optional(),
+        Horario: yup.string().nullable().optional(),
         DesAula: yup.string().nullable().optional(),
-        LinkAula: yup.array().of(
-            yup.object().shape({
-                url: yup.string().url().required(),
-                name: yup.string().required(),
-            })
-        ).nullable().optional(), // Permite um array de links estruturados ou null
+        LinkAula: yup.lazy((value) => {
+            if (typeof value === "string") {
+                try {
+                    const parsed = JSON.parse(value);
+                    if (Array.isArray(parsed)) {
+                        return yup.array().of(
+                            yup.object().shape({
+                                url: yup.string().url().required(),
+                                name: yup.string().required(),
+                            })
+                        );
+                    }
+                } catch {
+                    return yup.array().nullable(); // Caso seja uma string inválida
+                }
+            }
+            return yup.array().of(
+                yup.object().shape({
+                    url: yup.string().url().required(),
+                    name: yup.string().required(),
+                })
+            ).nullable();
+        }).optional(),
+        arquivosExistentes: yup.string().nullable().optional(), // IDs ou nomes dos arquivos existentes
     });
 
     try {
@@ -42,21 +60,27 @@ export const EditarAula = async (req, res) => {
         }
 
         // Só atualiza os campos enviados, exceto o campo _id
-        const { _id, ...updateFields } = req.body;
+        const { _id, arquivosExistentes, ...updateFields } = req.body;
 
         // Preserva o campo createdAt ou define um novo se não existir
         updateFields.createdAt = aula.createdAt || new Date().toISOString();
 
-        // Se houver arquivos, atualize os metadados e salve os arquivos
+        // Atualiza os arquivos existentes
+        const arquivosExistentesIds = arquivosExistentes ? JSON.parse(arquivosExistentes) : [];
+        updateFields.arquivos = aula.arquivos.filter((arq) =>
+            arquivosExistentesIds.includes(arq.nome || arq._id.toString())
+        );
+
+        // Se houver novos arquivos, atualize os metadados e salve os arquivos
         const files = req.files || [];
         if (files.length > 0) {
-            const arquivos = files.map((file) => ({
+            const novosArquivos = files.map((file) => ({
                 nome: file.originalname,
                 mimetype: file.mimetype,
             }));
-            updateFields.arquivos = [...(aula.arquivos || []), ...arquivos];
+            updateFields.arquivos = [...updateFields.arquivos, ...novosArquivos];
 
-            // Salva os arquivos na coleção arquivosAulas
+            // Salva os novos arquivos na coleção arquivosAulas
             for (let i = 0; i < files.length; i++) {
                 await arquivosCol.insertOne({
                     aulaId: new ObjectId(id),
@@ -74,7 +98,9 @@ export const EditarAula = async (req, res) => {
             return res.status(500).json({ error: "Erro ao atualizar aula." });
         }
 
-        return res.status(200).json({ message: "Aula editada com sucesso!" });
+        // Busca e retorna a aula atualizada
+        const aulaAtualizada = await aulas.findOne({ _id: new ObjectId(id) });
+        return res.status(200).json({ message: "Aula editada com sucesso!", aula: aulaAtualizada });
     } catch (err) {
         console.error("Erro ao editar aula:", err);
         return res.status(500).json({ error: "Erro ao editar aula." });
