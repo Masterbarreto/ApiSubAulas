@@ -1,14 +1,18 @@
 // routes/aulas.js
 import express from 'express';
-import upload from '../Middleware/upload.js'; // Corrigido o path e o nome do diretório
-import { createAula } from '../controllers/Aulas/CreateAulas.js'; // Corrigido o nome do arquivo
-import { getPdf } from '../controllers/Aulas/getPdf.js';// Corrigido o nome do arquivo
-import { getAulas } from '../controllers/Aulas/getAulas.js'; // Corrigido o nome do arquivo
+import upload from '../Middleware/upload.js'; 
+import { createAula } from '../controllers/Aulas/CreateAulas.js'; 
+import { getPdf } from '../controllers/Aulas/getPdf.js';
+import { getAulas } from '../controllers/Aulas/getAulas.js'; 
 import { concluirAula } from '../controllers/Aulas/concluirAula.js';
 import { getAulasConcluidas } from '../controllers/Aulas/getAulasConcluidas.js';
-import { EditarAula } from '../controllers/Aulas/EditarAulas.js';
+import { uploadMiddleware, EditarAula } from "../controllers/Aulas/EditarAulas.js";
+import { ExcluirAula } from '../controllers/Aulas/ExcluirAula.js'; 
+// import { deleteArquivoAula } from "../controllers/Aulas/ExcluirARquivos.js"; // Corrigido o caminho
 import { getAulaById } from "../controllers/Aulas/AulaSele.js";
 import {NaoAula} from "../controllers/Aulas/DesconcluirAula.js";
+
+import { deleteArquivo } from "../controllers/Aulas/Aruivodelets.js";
 
 const router = express.Router();
 
@@ -28,12 +32,18 @@ router.patch('/:id/concluir', concluirAula);
 router.patch('/:id/desconcluir', NaoAula);
 
 // PATCH para editar aula
-router.patch('/:id', upload.array('arquivos'), EditarAula);
+router.patch("/:id", uploadMiddleware, EditarAula);
 
 // GET aulas não concluídas
 router.get('/MostarAulas', getAulas);
 
 // GET aulas concluídas
 router.get('/AulasConcluidas', getAulasConcluidas);
+
+// DELETE /api/v1/aulas/:id
+router.delete('/:id', ExcluirAula);
+
+// DELETE para excluir arquivo de uma aula
+router.delete('/arquivos/:id', deleteArquivo);
 
 export default router;

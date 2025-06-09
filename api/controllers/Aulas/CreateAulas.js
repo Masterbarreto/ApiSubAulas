@@ -1,113 +1,126 @@
 import { getDb } from "../../db.js";
 import yup from "yup";
+import multer from "multer";
+
+// Configuração do multer para receber arquivos em memória
+const upload = multer();
+export const uploadMiddleware = upload.any();
 
 export const createAula = async (req, res) => {
+  try {
+    // Verifica se o corpo da requisição está definido
+    if (!req.body) {
+      return res
+        .status(400)
+        .json({ error: "Dados do corpo da requisição não fornecidos." });
+    }
+
+    // Converte `LinkAula` para array de objetos, se for enviado como string
+    if (req.body.LinkAula && typeof req.body.LinkAula === "string") {
+      try {
+        req.body.LinkAula = JSON.parse(req.body.LinkAula);
+      } catch {
+        return res.status(400).json({ error: "Formato inválido para LinkAula" });
+      }
+    }
+
+    // Definição do esquema de validação
     const schema = yup.object().shape({
-        anoEscolar: yup.string().required(),
-        curso: yup.string().required(),
-        titulo: yup.string().required(),
-        Turma: yup.string().required(),
-        Materia: yup.string().required(),
-        DayAula: yup.string().required(),
-        Horario: yup.string().nullable(),
-        DesAula: yup.string().nullable(),
-        LinkAula: yup.lazy(value => {
-            if (typeof value === "string") {
-                try {
-                    const parsed = JSON.parse(value);
-                    if (Array.isArray(parsed)) {
-                        return yup.array().of(
-                            yup.object().shape({
-                                url: yup.string().url().required(),
-                                name: yup.string().required(),
-                            })
-                        );
-                    }
-                } catch {
-                    return yup.string().required(); // Caso seja uma string inválida
-                }
-            }
-            return yup.array().of(
-                yup.object().shape({
-                    url: yup.string().url().required(),
-                    name: yup.string().required(),
-                })
-            ).nullable();
-        }),
-        professor: yup.string().required(),
+      anoEscolar: yup.string().required(),
+      curso: yup.string().required(),
+      titulo: yup.string().required(),
+      Turma: yup.string().required(),
+      Materia: yup.string().required(),
+      DayAula: yup.string().required(),
+      Horario: yup.string().nullable(),
+      DesAula: yup.string().nullable(),
+      LinkAula: yup
+        .array()
+        .of(
+          yup.object().shape({
+            url: yup.string().url().required(),
+            name: yup.string().required(),
+          })
+        )
+        .optional(),
+      professor: yup.string().required(),
     });
 
-    try {
-        await schema.validate(req.body, { abortEarly: false });
-    } catch (error) {
-        return res.status(400).json({ error: error.errors });
-    }
+    // Valida os dados recebidos
+    await schema.validate(req.body, { abortEarly: false });
 
     const {
-        anoEscolar, curso, titulo, Turma, Materia,
-        DayAula, Horario, DesAula, LinkAula, professor
+      anoEscolar,
+      curso,
+      titulo,
+      Turma,
+      Materia,
+      DayAula,
+      Horario,
+      DesAula,
+      LinkAula,
+      professor,
     } = req.body;
+
     const files = req.files || [];
 
-    // Metadados dos arquivos
-    const arquivos = files.map(file => ({
-        nome: file.originalname,
-        mimetype: file.mimetype,
-    }));
-
     const aulaData = {
-        anoEscolar,
-        curso,
-        titulo,
-        Turma,
-        Materia,
-        DayAula,
-        Horario,
-        DesAula,
-        LinkAula: Array.isArray(LinkAula) ? LinkAula : [], // Garante que seja um array
-        concluida: false,
-        arquivos,
-        arquivosIds: [],
-        professor: professor,
-        createdAt: new Date().toISOString(), // Adiciona a data de criação no formato YYYY-MM-DD
+      anoEscolar,
+      curso,
+      titulo,
+      Turma,
+      Materia,
+      DayAula,
+      Horario,
+      DesAula,
+      LinkAula: Array.isArray(LinkAula) ? LinkAula : [],
+      concluida: false,
+      arquivos: [],
+      arquivosIds: [],
+      professor,
+      createdAt: new Date().toISOString(),
     };
 
-    try {
-        const db = await getDb();
-        const aulas = db.collection('aulas');
-        const arquivosCol = db.collection('arquivosAulas');
+    const db = await getDb();
+    const aulasCol = db.collection("aulas");
+    const arquivosCol = db.collection("arquivosAulas");
 
-        // Insere a aula
-        const result = await aulas.insertOne(aulaData);
+    const { insertedId: aulaId } = await aulasCol.insertOne(aulaData);
 
-        // Insere os arquivos e coleta os IDs
-        const arquivosIds = [];
-        for (let i = 0; i < files.length; i++) {
-            const arquivoResult = await arquivosCol.insertOne({
-                aulaId: result.insertedId,
-                nome: files[i].originalname,
-                mimetype: files[i].mimetype,
-                data: files[i].buffer,
-            });
-            arquivosIds.push(arquivoResult.insertedId);
-        }
+    const arquivosIds = [];
+    const arquivosComIds = [];
+    for (let i = 0; i < files.length; i++) {
+      const arquivoResult = await arquivosCol.insertOne({
+        aulaId,
+        nome: files[i].originalname,
+        mimetype: files[i].mimetype,
+        data: files[i].buffer,
+      });
 
-        // Atualiza a aula com os arquivosIds
-        if (arquivosIds.length > 0) {
-            await aulas.updateOne(
-                { _id: result.insertedId },
-                { $set: { arquivosIds } }
-            );
-        }
+      const arquivoId = arquivoResult.insertedId;
 
-        return res.status(201).json({
-            message: 'Aula criada com sucesso!',
-            aulaId: result.insertedId,
-            arquivosIds,
-            createdAt: aulaData.createdAt, // Retorna a data de criação na resposta
-        });
-    } catch (err) {
-        console.error('Erro ao criar aula:', err);
-        return res.status(500).json({ error: 'Erro interno no servidor' });
+      arquivosIds.push(arquivoId.toHexString());
+      arquivosComIds.push({
+        nome: files[i].originalname,
+        mimetype: files[i].mimetype,
+        id: arquivoId.toHexString(),
+      });
     }
+
+    await aulasCol.updateOne(
+      { _id: aulaId },
+      { $set: { arquivosIds, arquivos: arquivosComIds } }
+    );
+
+    return res.status(201).json({
+      message: "Aula criada com sucesso!",
+      aulaId: aulaId.toHexString(),
+      arquivosIds,
+      arquivos: arquivosComIds,
+      createdAt: aulaData.createdAt,
+    });
+  } catch (err) {
+    console.error("Erro ao criar aula:", err);
+    return res.status(500).json({ error: "Erro interno no servidor" });
+  }
 };

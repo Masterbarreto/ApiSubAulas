@@ -10,25 +10,20 @@ export const getAula = async (req, res) => {
             return res.status(404).json({ error: "Aula não encontrada." });
         }
 
-        const arquivos = aula.arquivo ? [{
-            nome: aula.arquivo.nome,
-            url: `/api/v1/aulas/${aula._id}/pdf`
-        }] : [];
+        // Combine `arquivos` e `arquivosIds` para garantir que cada arquivo tenha um identificador
+        const arquivosDetalhados = (aula.arquivosIds || []).map((objId, idx) => ({
+            id: objId.toHexString(), // Converte ObjectId para string
+            nome: aula.arquivos[idx]?.nome,
+            mimetype: aula.arquivos[idx]?.mimetype,
+        }));
 
-        const links = aula.LinkAula ? [{
-            titulo: "Link da Aula",
-            url: aula.LinkAula
-        }] : [];
-
-        const resultado = {
-            título: aula.título,
-            Descricao: aula.DesAula,
-            Horario: aula.Horario,
-            arquivos,
-            links
+        // Substitua o campo `arquivos` no JSON de resposta
+        const resposta = {
+            ...aula,
+            arquivos: arquivosDetalhados,
         };
 
-        return res.status(200).json(resultado);
+        return res.status(200).json(resposta);
     } catch (err) {
         console.error("Erro ao buscar aula:", err);
         return res.status(500).json({ error: "Erro ao buscar a aula." });
