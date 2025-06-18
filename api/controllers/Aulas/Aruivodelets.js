@@ -1,5 +1,6 @@
 import { getDb } from "../../db.js";
 import { ObjectId } from "mongodb";
+import analytics from "../../../utils/segment.js";
 
 export const deleteArquivo = async (req, res) => {
     const { id } = req.params; // ID do arquivo recebido como string
@@ -34,6 +35,16 @@ export const deleteArquivo = async (req, res) => {
                 },
             }
         );
+
+        // Adiciona rastreamento do evento
+        analytics.track({
+            userId: req.user?.id || "unknown", // Substitua por um identificador de usuário, se disponível
+            event: "Arquivo Deletado",
+            properties: {
+                arquivoId: id,
+                timestamp: new Date().toISOString(),
+            },
+        });
 
         return res.status(200).json({ message: "Arquivo deletado com sucesso!" });
     } catch (err) {

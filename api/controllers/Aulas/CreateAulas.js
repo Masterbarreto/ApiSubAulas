@@ -1,6 +1,7 @@
 import { getDb } from "../../db.js";
 import yup from "yup";
 import multer from "multer";
+import analytics from "../../../utils/segment.js";
 
 // Configuração do multer para receber arquivos em memória
 const upload = multer();
@@ -111,6 +112,19 @@ export const createAula = async (req, res) => {
       { _id: aulaId },
       { $set: { arquivosIds, arquivos: arquivosComIds } }
     );
+
+    // Adiciona rastreamento do evento
+    analytics.track({
+      userId: req.user?.id || "unknown",
+      event: "Aula Criada",
+      properties: {
+        aulaId: aulaId.toHexString(),
+        titulo,
+        arquivosIds,
+        professor,
+        timestamp: new Date().toISOString(),
+      },
+    });
 
     return res.status(201).json({
       message: "Aula criada com sucesso!",

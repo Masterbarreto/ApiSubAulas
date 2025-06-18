@@ -1,104 +1,370 @@
-# API Mongo - Sistema de Substituição de Aulas
+# 📚 API Mongo - Sistema de Substituição de Aulas
 
-Este projeto é uma API desenvolvida em Node.js utilizando MongoDB como banco de dados. A API é responsável por gerenciar usuários, sessões e atividades relacionadas ao sistema de substituição de aulas.
+<div align="center">
 
-## Funcionalidades
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 
-- **Cadastro de Usuários**: Permite criar novos usuários no sistema.
-- **Login de Usuários**: Autenticação de usuários com validação de credenciais.
-- **Logout de Usuários**: Finaliza a sessão de um usuário.
-- **Registro de Atividades**: Registra ações realizadas pelos usuários.
-- **Recuperação de Atividades**: Permite consultar as atividades realizadas por um usuário.
-- **Redefinição de Senha**: Permite redefinir a senha de um usuário.
-- **Verificação de Conta**: Verifica a conta do usuário através de um código.
+**Uma API REST robusta para gerenciamento inteligente de substituições de aulas**
 
-## Estrutura do Projeto
+[🚀 Começar](#instalação) •
+[📖 Documentação](#documentação) •
+[🛠️ API](#endpoints) •
+[🤝 Contribuir](#contribuição)
 
-### Principais Diretórios
+</div>
 
-- **controllers/**: Contém os controladores responsáveis pela lógica de negócio.
-- **models/**: Contém os modelos do MongoDB.
-- **routes/**: Define as rotas da API.
-- **public/**: Contém páginas HTML para feedback ao usuário.
-- **server/**: Configuração do servidor Express.
+---
 
-## Tecnologias Utilizadas
+## 📋 Índice
 
-- **Node.js**: Ambiente de execução JavaScript.
-- **Express**: Framework para criação de APIs.
-- **MongoDB**: Banco de dados NoSQL.
-- **Yup**: Validação de dados.
-- **Bcrypt**: Criptografia de senhas.
-- **Swagger**: Documentação da API.
-- **Chalk**: Estilização de logs no console.
+- [Sobre o Projeto](#sobre-o-projeto)
+- [Funcionalidades](#funcionalidades)
+- [Tecnologias](#tecnologias)
+- [Pré-requisitos](#pré-requisitos)
+- [Instalação](#instalação)
+- [Configuração](#configuração)
+- [Uso](#uso)
+- [Endpoints](#endpoints)
+- [Estrutura do Projeto](#estrutura-do-projeto)
+- [Documentação](#documentação)
+- [Contribuição](#contribuição)
+- [Licença](#licença)
 
-## Instalação
+## 🎯 Sobre o Projeto
 
-1. **Clone o repositório**:
-   ```bash
-   git clone https://github.com/seu-usuario/api-mongo.git
-   cd api-mongo
-   ```
+O **Sistema de Substituição de Aulas** é uma API REST desenvolvida para facilitar o gerenciamento de substituições de aulas em instituições educacionais. A aplicação oferece controle completo sobre usuários, aulas, relatórios e atividades, com recursos avançados de analytics e monitoramento.
 
-2. **Instale as dependências**:
-   ```bash
-   npm install
-   ```
+### 🎨 Características Principais
 
-3. **Configure as variáveis de ambiente**:
-   Crie um arquivo `.env` na raiz do projeto e defina as seguintes variáveis:
-   ```env
-   MONGODB_URI=<sua-uri-do-mongodb>
-   DB_NAME=<nome-do-banco>
-   API_VERSION=/api/v1
-   PORT=3000
-   ```
+- 🔐 **Autenticação segura** com criptografia bcrypt
+- 📊 **Relatórios detalhados** com gráficos e estatísticas
+- 🎯 **Rastreamento de eventos** via Segment Analytics
+- 📧 **Sistema de notificações** por e-mail
+- 📱 **API RESTful** bem documentada
+- 🔄 **Recuperação de senha** automatizada
 
-## Uso
+## ⚡ Funcionalidades
 
-1. **Inicie o servidor**:
-   ```bash
-   npm start
-   ```
+### 👥 Gerenciamento de Usuários
+- [x] Cadastro e autenticação de usuários
+- [x] Sistema de login/logout seguro
+- [x] Recuperação e redefinição de senhas
+- [x] Verificação de conta por código
+- [x] Registro de atividades do usuário
 
-2. **Acesse a API**:
-   O servidor estará disponível em: [http://localhost:3000](http://localhost:3000).
+### 🎓 Gerenciamento de Aulas
+- [x] Criação, edição e exclusão de aulas
+- [x] Controle de status (pendente/concluída)
+- [x] Listagem de aulas por status
+- [x] Histórico completo de modificações
 
-## Rotas Principais
+### 📈 Relatórios e Analytics
+- [x] Relatórios semanais automatizados
+- [x] Estatísticas de aulas por mês
+- [x] Ranking de matérias mais substituídas
+- [x] Dashboard com métricas em tempo real
 
-### Usuários
-- **Cadastro de Usuários**:  
-  `POST /api/v1/users/register`  
-  Permite criar novos usuários no sistema.
+## 🛠️ Tecnologias
 
-- **Login de Usuários**:  
-  `POST /api/v1/users/login`  
-  Autentica usuários com validação de credenciais.
+### Backend
+- **Node.js** - Runtime JavaScript
+- **Express.js** - Framework web minimalista
+- **MongoDB** - Banco de dados NoSQL
+- **Mongoose** - ODM para MongoDB
 
-- **Logout de Usuários**:  
-  `DELETE /api/v1/users/logout/:id`  
-  Finaliza a sessão de um usuário.
+### Segurança & Validação
+- **Bcrypt** - Criptografia de senhas
+- **Yup** - Validação de schemas
+- **Express-session** - Gerenciamento de sessões
 
-- **Registro de Atividades**:  
-  `POST /api/v1/users/activity`  
-  Registra ações realizadas pelos usuários.
+### Utilitários
+- **Nodemailer** - Envio de emails
+- **Multer** - Upload de arquivos
+- **Morgan** - Logging de requisições
+- **Swagger** - Documentação da API
+- **Segment** - Analytics e tracking
 
-- **Recuperação de Atividades**:  
-  `GET /api/v1/users/activity/:userId`  
-  Consulta as atividades realizadas por um usuário.
+### DevOps
+- **dotenv** - Gerenciamento de variáveis de ambiente
+- **Chalk** - Colorização de logs
+- **Nodemon** - Auto-reload em desenvolvimento
 
-- **Redefinição de Senha**:  
-  `POST /api/v1/users/reset-password`  
-  Permite redefinir a senha de um usuário.
+## 📋 Pré-requisitos
 
-## Documentação
+Antes de começar, certifique-se de ter instalado:
 
-Acesse a documentação da API em [http://localhost:3000/docs](http://localhost:3000/docs).
+- [Node.js](https://nodejs.org/) (versão 14+ recomendada)
+- [MongoDB](https://www.mongodb.com/) (local ou Atlas)
+- [Git](https://git-scm.com/)
+- [npm](https://www.npmjs.com/) ou [yarn](https://yarnpkg.com/)
 
-## Contribuição
+## 🚀 Instalação
 
-Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests.
+### 1. Clone o repositório
+```bash
+git clone https://github.com/Masterbarreto/api-mongo.git
+cd api-mongo
+```
 
-## Licença
+### 2. Instale as dependências
+```bash
+npm install
+# ou
+yarn install
+```
 
-Este projeto está licenciado sob a licença ISC.
+### 3. Configure as variáveis de ambiente
+```bash
+cp .env.example .env
+```
+
+## ⚙️ Configuração
+
+Edite o arquivo `.env` com suas configurações:
+
+```env
+# Configurações do Banco de Dados
+MONGODB_URI=mongodb://localhost:27017/sistema-aulas
+DB_NAME=sistema_substituicao_aulas
+
+# Configurações do Servidor
+PORT=3000
+API_VERSION=/api/v1
+NODE_ENV=development
+
+# Configurações de Sessão
+SESSION_SECRET=sua-chave-secreta-super-segura
+
+# Configurações de Email (Gmail)
+GMAIL_USER=seu-email@gmail.com
+GMAIL_PASS=sua-senha-de-app
+
+# Analytics
+SEGMENT_WRITE_KEY=sua-chave-do-segment
+
+# URLs
+CLIENT_URL=http://localhost:3000
+API_URL=http://localhost:3000/api/v1
+```
+
+## 🎯 Uso
+
+### Desenvolvimento
+```bash
+# Instalar nodemon globalmente (opcional)
+npm install -g nodemon
+
+# Executar em modo desenvolvimento
+nodemon api/server/serves.js
+```
+
+### Produção
+```bash
+npm start
+```
+
+A API estará disponível em: `http://localhost:3000`
+
+## 🛣️ Endpoints
+
+### 🔐 Autenticação
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| `POST` | `/api/v1/users/register` | Cadastro de usuário |
+| `POST` | `/api/v1/users/login` | Login do usuário |
+| `DELETE` | `/api/v1/users/logout/:id` | Logout do usuário |
+| `POST` | `/api/v1/users/reset-password` | Redefinir senha |
+
+### 🎓 Aulas
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| `POST` | `/api/v1/aulas` | Criar nova aula |
+| `GET` | `/api/v1/aulas/MostarAulas` | Listar aulas pendentes |
+| `GET` | `/api/v1/aulas/AulasConcluidas` | Listar aulas concluídas |
+| `PATCH` | `/api/v1/aulas/:id` | Editar aula |
+| `DELETE` | `/api/v1/aulas/:id` | Excluir aula |
+| `PATCH` | `/api/v1/aulas/:id/concluir` | Concluir aula |
+| `PATCH` | `/api/v1/aulas/:id/desconcluir` | Desfazer conclusão |
+
+### 📊 Relatórios
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| `GET` | `/api/v1/relatorios/relatorio-semanal` | Relatório semanal |
+| `GET` | `/api/v1/relatorios/materias-mais-substituicoes` | Top matérias |
+| `GET` | `/api/v1/relatorios/total-aulas-concluidas` | Total concluídas |
+| `GET` | `/api/v1/relatorios/aulas-por-mes` | Aulas por mês |
+
+### 📝 Atividades
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| `POST` | `/api/v1/users/activity` | Registrar atividade |
+| `GET` | `/api/v1/users/activity/:userId` | Buscar atividades |
+
+## 📁 Estrutura do Projeto
+
+```
+api-mongo/
+├── 📁 api/
+│   ├── 📁 controllers/      # Lógica de negócio
+│   │   ├── userController.js
+│   │   ├── aulaController.js
+│   │   └── relatorioController.js
+│   ├── 📁 models/          # Modelos do MongoDB
+│   │   ├── User.js
+│   │   ├── Aula.js
+│   │   └── Activity.js
+│   ├── 📁 routes/          # Definição das rotas
+│   │   ├── userRoutes.js
+│   │   ├── aulaRoutes.js
+│   │   └── relatorioRoutes.js
+│   ├── 📁 public/          # Arquivos estáticos
+│   │   └── 📁 html/       # Páginas de feedback
+│   ├── 📁 server/          # Configuração do servidor
+│   │   └── serves.js      # Arquivo principal
+│   └── 📁 utils/           # Utilitários
+│       ├── emailService.js
+│       ├── segmentService.js
+│       └── validators.js
+├── 📄 .env.example         # Exemplo de variáveis
+├── 📄 package.json         # Dependências
+└── 📄 README.md           # Este arquivo
+```
+
+## 📖 Documentação
+
+### Swagger UI
+Acesse a documentação interativa da API em:
+```
+http://localhost:3000/docs
+```
+
+### Exemplo de Requisição
+
+#### Criar uma nova aula
+```javascript
+// POST /api/v1/aulas
+{
+  "materia": "Matemática",
+  "professor": "João Silva",
+  "dataAula": "2024-06-20",
+  "horario": "14:00",
+  "substituido": false,
+  "observacoes": "Aula sobre equações de segundo grau"
+}
+```
+
+#### Resposta
+```javascript
+{
+  "success": true,
+  "message": "Aula criada com sucesso",
+  "data": {
+    "_id": "60d5ec49f1b2c8b1f4c8a1b2",
+    "materia": "Matemática",
+    "professor": "João Silva",
+    "dataAula": "2024-06-20T00:00:00.000Z",
+    "horario": "14:00",
+    "concluida": false,
+    "createdAt": "2024-06-17T10:30:00.000Z"
+  }
+}
+```
+
+## 🧪 Testes
+
+```bash
+# Executar todos os testes (quando implementados)
+npm test
+
+# Para implementar testes, considere usar:
+# - Jest para testes unitários
+# - Supertest para testes de integração
+# - MongoDB Memory Server para testes com banco
+```
+
+## 🚀 Deploy
+
+### Render
+```bash
+# 1. Conecte seu repositório GitHub ao Render
+# 2. Configure as variáveis de ambiente no painel do Render:
+
+# Configurações obrigatórias:
+MONGODB_URI=sua-uri-mongodb-atlas
+DB_NAME=sistema_substituicao_aulas
+SESSION_SECRET=sua-chave-secreta-super-segura
+GMAIL_USER=seu-email@gmail.com
+GMAIL_PASS=sua-senha-de-app
+SEGMENT_WRITE_KEY=sua-chave-do-segment
+
+# 3. Configure as configurações de build:
+# Build Command: npm install
+# Start Command: npm start
+```
+
+### Variáveis de Ambiente no Render
+No painel do Render, adicione as seguintes variáveis:
+- `MONGODB_URI` - String de conexão do MongoDB Atlas
+- `DB_NAME` - Nome do banco de dados
+- `SESSION_SECRET` - Chave secreta para sessões
+- `GMAIL_USER` - Email para envio de notificações
+- `GMAIL_PASS` - Senha de app do Gmail
+- `SEGMENT_WRITE_KEY` - Chave do Segment Analytics
+- `NODE_ENV` - production
+
+### Docker (Opcional)
+```bash
+# Build da imagem
+docker build -t api-substituicao-aulas .
+
+# Executar container
+docker run -p 3000:3000 api-substituicao-aulas
+```
+
+## 🤝 Contribuição
+
+Contribuições são sempre bem-vindas! Para contribuir:
+
+1. **Fork** o projeto
+2. Crie uma **branch** para sua feature (`git checkout -b feature/nova-feature`)
+3. **Commit** suas mudanças (`git commit -m 'Adiciona nova feature'`)
+4. **Push** para a branch (`git push origin feature/nova-feature`)
+5. Abra um **Pull Request**
+
+### 📝 Padrões de Commit
+- `feat:` Nova funcionalidade
+- `fix:` Correção de bug
+- `docs:` Alterações na documentação
+- `style:` Formatação, sem mudanças de código
+- `refactor:` Refatoração de código
+- `test:` Adição ou correção de testes
+
+## 🐛 Reportar Bugs
+
+Encontrou um bug? Abra uma [issue](https://github.com/Masterbarreto/api-mongo/issues) com:
+
+- Descrição clara do problema
+- Passos para reproduzir
+- Comportamento esperado vs atual
+- Screenshots (se aplicável)
+- Informações do ambiente
+
+## 📞 Suporte
+- 🐛 Issues: [GitHub Issues](https://github.com/Masterbarreto/api-mongo/issues)
+
+## 📄 Licença
+
+Este projeto está licenciado sob a **Licença ISC**. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+---
+
+<div align="center">
+
+**⭐ Se este projeto te ajudou, considere dar uma estrela!**
+
+Feito com ❤️ por [Pedro Henrique Vieira Barreto](https://github.com/Masterbarreto)
+
+</div>

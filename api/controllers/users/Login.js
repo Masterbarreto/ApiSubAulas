@@ -3,6 +3,7 @@ import { getDb } from "../../db.js";
 import yup from "yup";
 import chalk from "chalk";
 import bcrypt from "bcrypt";
+import analytics from "../../../utils/segment.js";
 
 // Validação do schema de login
 const loginSchema = yup.object().shape({
@@ -38,6 +39,18 @@ export async function loginUser(req, res) {
         }
 
         console.log(chalk.green(`Sistema 💻 : Login bem-sucedido: ${user._id}`));
+
+        // Adiciona rastreamento do evento
+        analytics.track({
+            userId: user._id.toString(),
+            event: "Login Bem-Sucedido",
+            properties: {
+                email: user.email,
+                cargo: user.cargo,
+                timestamp: new Date().toISOString(),
+            },
+        });
+
         return res.status(200).json({
             message: "Login bem-sucedido ✅",
             userId: user._id,

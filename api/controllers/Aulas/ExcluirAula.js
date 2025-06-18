@@ -1,5 +1,6 @@
 import { getDb } from "../../db.js";
 import { ObjectId } from "mongodb";
+import analytics from "../../../utils/segment.js";
 
 export const ExcluirAula = async (req, res) => {
   const { id } = req.params;
@@ -26,7 +27,17 @@ export const ExcluirAula = async (req, res) => {
     // Remove a aula
     await aulas.deleteOne({ _id: new ObjectId(id) });
 
-    return res.status(200).json({ message: "Aula excluída com sucesso!" });
+    res.status(200).json({ message: "Aula excluída com sucesso!" });
+
+    // Adiciona rastreamento do evento
+    analytics.track({
+      userId: req.user?.id || "unknown",
+      event: "Aula Excluída",
+      properties: {
+        aulaId: id,
+        timestamp: new Date().toISOString(),
+      },
+    });
   } catch (error) {
     console.error("Erro ao excluir aula:", error);
     return res.status(500).json({ error: "Erro ao excluir aula." });

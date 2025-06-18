@@ -10,6 +10,7 @@
     "start": "node api/server/serves.js"
   },
   "dependencies": {
+    "@segment/analytics-node": "^2.2.1",
     "api-mongo": "file:",
     "bcrypt": "^5.1.1",
     "chalk": "^5.4.1",

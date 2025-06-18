@@ -2,6 +2,7 @@ import { getDb } from "../../db.js";
 import { ObjectId } from "mongodb";
 import yup from "yup";
 import multer from "multer";
+import analytics from "../../../utils/segment.js";
 
 // 1) Configuração do multer (sem diskStorage—vamos receber o arquivo em memória)
 const upload = multer();
@@ -146,11 +147,21 @@ export const EditarAula = async (req, res) => {
 
     // 3.11) Busca de volta a aula já atualizada (com arquivos novos + antigos)
     const aulaAtualizada = await aulas.findOne({ _id: new ObjectId(id) });
-    return res
-      .status(200)
-      .json({ message: "Aula editada com sucesso!", aula: aulaAtualizada });
+    res.status(200).json({ message: "Aula editada com sucesso!", aula: aulaAtualizada });
+
+    // Adiciona rastreamento do evento
+    analytics.track({
+      userId: req.user?.id || "unknown",
+      event: "Aula Editada",
+      properties: {
+        aulaId: id,
+        titulo: aulaAtualizada.titulo,
+        arquivosIds: aulaAtualizada.arquivosIds || [],
+        timestamp: new Date().toISOString(),
+      },
+    });
   } catch (err) {
     console.error("Erro ao editar aula:", err);
-    return res.status(500).json({ error: "Erro ao editar aula." });
+    res.status(500).json({ error: "Erro ao editar aula." });
   }
 };
