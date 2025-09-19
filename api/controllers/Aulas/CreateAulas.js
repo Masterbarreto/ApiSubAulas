@@ -25,12 +25,35 @@ export const createAula = async (req, res) => {
       }
     }
 
+    // Converte strings de arrays para arrays, se necessário
+    if (req.body.Turma && typeof req.body.Turma === "string") {
+      try {
+        req.body.Turma = JSON.parse(req.body.Turma);
+      } catch {
+        // Se não conseguir fazer parse, mantém como string e converte para array
+        req.body.Turma = [req.body.Turma];
+      }
+    }
+
+    if (req.body.curso && typeof req.body.curso === "string") {
+      try {
+        req.body.curso = JSON.parse(req.body.curso);
+      } catch {
+        // Se não conseguir fazer parse, mantém como string e converte para array
+        req.body.curso = [req.body.curso];
+      }
+    }
+
     // Definição do esquema de validação
     const schema = yup.object().shape({
       anoEscolar: yup.string().required(),
-      curso: yup.string().required(),
+      curso: yup.mixed().test('curso-validation', 'Curso deve ser uma string ou array de strings', function(value) {
+        return typeof value === 'string' || (Array.isArray(value) && value.every(item => typeof item === 'string'));
+      }).required(),
       titulo: yup.string().required(),
-      Turma: yup.string().required(),
+      Turma: yup.mixed().test('turma-validation', 'Turma deve ser uma string ou array de strings', function(value) {
+        return typeof value === 'string' || (Array.isArray(value) && value.every(item => typeof item === 'string'));
+      }).required(),
       Materia: yup.string().required(),
       DayAula: yup.string().required(),
       Horario: yup.string().nullable(),
@@ -65,11 +88,15 @@ export const createAula = async (req, res) => {
 
     const files = req.files || [];
 
+    // Garante que curso e Turma sejam arrays
+    const cursosArray = Array.isArray(curso) ? curso : [curso];
+    const turmasArray = Array.isArray(Turma) ? Turma : [Turma];
+
     const aulaData = {
       anoEscolar,
-      curso,
+      cursos: cursosArray, // Mudou de 'curso' para 'cursos' (array)
+      turmas: turmasArray, // Mudou de 'Turma' para 'turmas' (array)
       titulo,
-      Turma,
       Materia,
       DayAula,
       Horario,
@@ -120,6 +147,8 @@ export const createAula = async (req, res) => {
       properties: {
         aulaId: aulaId.toHexString(),
         titulo,
+        cursos: cursosArray,
+        turmas: turmasArray,
         arquivosIds,
         professor,
         timestamp: new Date().toISOString(),
@@ -129,6 +158,8 @@ export const createAula = async (req, res) => {
     return res.status(201).json({
       message: "Aula criada com sucesso!",
       aulaId: aulaId.toHexString(),
+      cursos: cursosArray,
+      turmas: turmasArray,
       arquivosIds,
       arquivos: arquivosComIds,
       createdAt: aulaData.createdAt,

@@ -21,6 +21,9 @@ export const getAula = async (req, res) => {
         const resposta = {
             ...aula,
             arquivos: arquivosDetalhados,
+            // Adiciona compatibilidade com o novo formato
+            cursos: aula.cursos || (aula.curso ? [aula.curso] : []),
+            turmas: aula.turmas || (aula.Turma ? [aula.Turma] : []),
         };
 
         return res.status(200).json(resposta);

@@ -74,7 +74,7 @@ getDb().then((db) => {
 
     // Inicia o servidor
     const PORT = process.env.PORT || 3000;
-    server.listen(PORT, () => {
+    server.listen(PORT, '0.0.0.0', () => {
         console.log(chalk.green(`Sistema 💻 : Servidor rodando na porta ${PORT}`));
     });
 });

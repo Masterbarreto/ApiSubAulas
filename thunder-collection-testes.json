@@ -1,0 +1,193 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "Sistema Conclusão por Turma",
+  "dateExported": "2025-09-19T19:00:00.000Z",
+  "version": "1.1",
+  "folders": [],
+  "requests": [
+    {
+      "name": "1. Executar Migração",
+      "url": "http://localhost:3000/api/v1/aulas/migrate",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      },
+      "tests": []
+    },
+    {
+      "name": "2. Criar Aula Teste",
+      "url": "http://localhost:3000/api/v1/aulas",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"anoEscolar\": \"3ano\",\n  \"curso\": [\"iot\"],\n  \"titulo\": \"Teste Sistema Conclusão\",\n  \"Turma\": [\"1\", \"2\", \"3\", \"4\"],\n  \"Materia\": \"FTP\",\n  \"DayAula\": \"2025-09-20\",\n  \"Horario\": \"14:00\",\n  \"DesAula\": \"Aula de teste para múltiplas turmas\",\n  \"professor\": \"Professor Teste\"\n}"
+      },
+      "tests": []
+    },
+    {
+      "name": "3. Listar Aulas Não Concluídas",
+      "url": "http://localhost:3000/api/v1/aulas/MostarAulas",
+      "method": "GET",
+      "headers": [],
+      "body": {},
+      "tests": []
+    },
+    {
+      "name": "4. Concluir Turma 1",
+      "url": "http://localhost:3000/api/v1/aulas/AULA_ID_AQUI/concluir",
+      "method": "PATCH",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"turma\": \"1\"\n}"
+      },
+      "tests": []
+    },
+    {
+      "name": "5. Concluir Turma 3",
+      "url": "http://localhost:3000/api/v1/aulas/AULA_ID_AQUI/concluir",
+      "method": "PATCH",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"turma\": \"3\"\n}"
+      },
+      "tests": []
+    },
+    {
+      "name": "6. Erro: Concluir Turma 4 (depois desfazer)",
+      "url": "http://localhost:3000/api/v1/aulas/AULA_ID_AQUI/concluir",
+      "method": "PATCH",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"turma\": \"4\"\n}"
+      },
+      "tests": []
+    },
+    {
+      "name": "7. Desfazer Turma 4",
+      "url": "http://localhost:3000/api/v1/aulas/AULA_ID_AQUI/desconcluir",
+      "method": "PATCH",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"turma\": \"4\"\n}"
+      },
+      "tests": []
+    },
+    {
+      "name": "8. Concluir Turma Correta (2)",
+      "url": "http://localhost:3000/api/v1/aulas/AULA_ID_AQUI/concluir",
+      "method": "PATCH",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"turma\": \"2\"\n}"
+      },
+      "tests": []
+    },
+    {
+      "name": "9. Ver Aula Específica",
+      "url": "http://localhost:3000/api/v1/aulas/aula-id/AULA_ID_AQUI",
+      "method": "GET",
+      "headers": [],
+      "body": {},
+      "tests": []
+    },
+    {
+      "name": "10. Teste Validação: Turma Inexistente",
+      "url": "http://localhost:3000/api/v1/aulas/AULA_ID_AQUI/concluir",
+      "method": "PATCH",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"turma\": \"9\"\n}"
+      },
+      "tests": []
+    },
+    {
+      "name": "11. Teste Validação: Turma Já Concluída",
+      "url": "http://localhost:3000/api/v1/aulas/AULA_ID_AQUI/concluir",
+      "method": "PATCH",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"turma\": \"1\"\n}"
+      },
+      "tests": []
+    },
+    {
+      "name": "12. Concluir Última Turma (Completar)",
+      "url": "http://localhost:3000/api/v1/aulas/AULA_ID_AQUI/concluir",
+      "method": "PATCH",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"turma\": \"4\"\n}"
+      },
+      "tests": []
+    },
+    {
+      "name": "13. Listar Aulas Concluídas",
+      "url": "http://localhost:3000/api/v1/aulas/AulasConcluidas",
+      "method": "GET",
+      "headers": [],
+      "body": {},
+      "tests": []
+    }
+  ]
+}

@@ -57,9 +57,19 @@ O **Sistema de Substituição de Aulas** é uma API REST desenvolvida para facil
 
 ### 🎓 Gerenciamento de Aulas
 - [x] Criação, edição e exclusão de aulas
-- [x] Controle de status (pendente/concluída)
-- [x] Listagem de aulas por status
+- [x] **Sistema de conclusão granular** - Controle por turma específica
+- [x] **Correção de erros facilitada** - Desfazer conclusão por turma individual
+- [x] **Suporte a múltiplas turmas** - Uma aula para várias turmas simultaneamente
+- [x] **Upload de arquivos** e links para materiais didáticos
+- [x] Listagem de aulas por status (pendente/concluída/parcial)
 - [x] Histórico completo de modificações
+
+### 🎯 Sistema de Conclusão por Turma
+- [x] **Conclusão específica** - Marcar apenas turmas individuais como concluídas
+- [x] **Conclusão parcial** - Acompanhar progresso por turma
+- [x] **Correção de erros** - Desfazer conclusão de turma específica
+- [x] **Validações inteligentes** - Previne erros de marcação
+- [x] **Analytics detalhado** - Rastreamento granular por turma
 
 ### 📈 Relatórios e Analytics
 - [x] Relatórios semanais automatizados
@@ -67,7 +77,68 @@ O **Sistema de Substituição de Aulas** é uma API REST desenvolvida para facil
 - [x] Ranking de matérias mais substituídas
 - [x] Dashboard com métricas em tempo real
 
-## 🛠️ Tecnologias
+## � Documentação Avançada
+
+### 🎯 Sistema de Conclusão por Turma Específica
+
+#### Como Funciona
+
+O sistema permite controle granular de conclusão de aulas por turma individual, resolvendo o problema de quando um professor marca a turma errada e precisa corrigir apenas aquela turma específica.
+
+#### Nova Estrutura de Dados
+
+```javascript
+// Exemplo de aula com conclusão por turma
+{
+  _id: ObjectId("..."),
+  titulo: "Banco de Dados",
+  cursos: ["iot"],
+  turmas: ["1", "2", "3", "4"],
+  turmasConcluidas: ["1", "3"], // Apenas turmas 1 e 3 concluídas
+  concluida: false, // false porque nem todas as turmas estão concluídas
+  professor: "João Silva"
+}
+```
+
+#### APIs de Conclusão
+
+**1. Concluir Aula para Turma Específica**
+```javascript
+PATCH /api/v1/aulas/:aulaId/concluir
+{
+  "turma": "4"
+}
+```
+
+**2. Desfazer Conclusão para Turma Específica**
+```javascript
+PATCH /api/v1/aulas/:aulaId/desconcluir
+{
+  "turma": "4"
+}
+```
+
+**3. Cenário Prático: Corrigir Erro**
+```javascript
+// 1. Professor conclui para turma errada
+PATCH /concluir { "turma": "4" }
+
+// 2. Percebe o erro e desfaz
+PATCH /desconcluir { "turma": "4" }
+
+// 3. Conclui para a turma correta
+PATCH /concluir { "turma": "2" }
+```
+
+#### Benefícios
+
+- ✅ **Precisão total**: Cada turma tem status individual
+- ✅ **Correção fácil**: Remove/adiciona turmas específicas
+- ✅ **Compatibilidade**: Funciona com dados antigos
+- ✅ **Flexibilidade**: Conclusão gradual ou total
+- ✅ **Analytics detalhado**: Rastreia cada ação por turma
+
+## �🛠️ Tecnologias
 
 ### Backend
 - **Node.js** - Runtime JavaScript

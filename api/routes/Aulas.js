@@ -11,8 +11,8 @@ import { ExcluirAula } from '../controllers/Aulas/ExcluirAula.js';
 // import { deleteArquivoAula } from "../controllers/Aulas/ExcluirARquivos.js"; // Corrigido o caminho
 import { getAulaById } from "../controllers/Aulas/AulaSele.js";
 import {NaoAula} from "../controllers/Aulas/DesconcluirAula.js";
-
 import { deleteArquivo } from "../controllers/Aulas/Aruivodelets.js";
+import { runMigration } from "../controllers/Aulas/migrateAulas.js";
 
 const router = express.Router();
 
@@ -45,5 +45,8 @@ router.delete('/:id', ExcluirAula);
 
 // DELETE para excluir arquivo de uma aula
 router.delete('/arquivos/:id', deleteArquivo);
+
+// POST para executar migração do formato antigo para o novo
+router.post('/migrate', runMigration);
 
 export default router;

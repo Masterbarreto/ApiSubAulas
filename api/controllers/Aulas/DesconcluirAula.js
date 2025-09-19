@@ -5,25 +5,87 @@ import analytics from "../../../utils/segment.js";
 export const NaoAula = async (req, res) => {
     try {
         const db = await getDb();
-        const result = await db.collection("aulas").updateOne(
-            { _id: new ObjectId(req.params.id) },
-            { $set: { concluida: false } }
-        );
-        if (result.matchedCount === 0) {
+        const { turma } = req.body; // turma específica para desconcluir (opcional)
+        
+        // Primeiro busca a aula para ter informações completas
+        const aula = await db.collection("aulas").findOne({ _id: new ObjectId(req.params.id) });
+        
+        if (!aula) {
             return res.status(404).json({ error: "Aula não encontrada." });
         }
 
-        // Adiciona rastreamento do evento
+        // Obtém as turmas da aula (compatibilidade com formato antigo e novo)
+        const turmasAula = aula.turmas || (aula.Turma ? [aula.Turma] : []);
+        const turmasConcluidas = aula.turmasConcluidas || [];
+
+        let updateData = {};
+
+        if (turma) {
+            // Desconclusão para turma específica
+            if (!turmasAula.includes(turma)) {
+                return res.status(400).json({ 
+                    error: `Turma ${turma} não está associada a esta aula.`,
+                    turmasDisponiveis: turmasAula 
+                });
+            }
+
+            if (!turmasConcluidas.includes(turma)) {
+                return res.status(400).json({ 
+                    error: `Turma ${turma} não estava concluída.`,
+                    turmasConcluidas 
+                });
+            }
+
+            // Remove a turma do array de concluídas
+            const novasTurmasConcluidas = turmasConcluidas.filter(t => t !== turma);
+            
+            updateData = {
+                turmasConcluidas: novasTurmasConcluidas,
+                concluida: novasTurmasConcluidas.length === turmasAula.length // false se não são TODAS
+            };
+        } else {
+            // Desconclusão total (todas as turmas)
+            updateData = {
+                turmasConcluidas: [],
+                concluida: false
+            };
+        }
+
+        const result = await db.collection("aulas").updateOne(
+            { _id: new ObjectId(req.params.id) },
+            { $set: updateData }
+        );
+
+        // Adiciona rastreamento do evento com mais informações
         analytics.track({
             userId: req.user?.id || "unknown",
             event: "Aula Desconcluída",
             properties: {
                 aulaId: req.params.id,
+                titulo: aula.titulo,
+                cursos: aula.cursos || (aula.curso ? [aula.curso] : []),
+                turmas: turmasAula,
+                turmaDesconcluida: turma || "todas",
+                turmasConcluidas: updateData.turmasConcluidas,
+                concluida: updateData.concluida,
+                professor: aula.professor,
                 timestamp: new Date().toISOString(),
             },
         });
 
-        return res.status(200).json({ message: "Aula desfeita com sucesso!" });
+        return res.status(200).json({ 
+            message: turma 
+                ? `Conclusão desfeita para a turma ${turma}!` 
+                : "Conclusão desfeita para todas as turmas!",
+            aula: {
+                id: req.params.id,
+                titulo: aula.titulo,
+                cursos: aula.cursos || (aula.curso ? [aula.curso] : []),
+                turmas: turmasAula,
+                turmasConcluidas: updateData.turmasConcluidas,
+                concluida: updateData.concluida
+            }
+        });
     } catch (err) {
         console.error("Erro ao desfazer aula:", err);
         return res.status(500).json({ error: "Erro ao desfazer aula." });
