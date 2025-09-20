@@ -34,7 +34,8 @@ export const getAulasConcluidas = async (req, res) => {
                 curso: aula.cursos ? aula.cursos[0] : aula.curso,
                 Turma: aula.turmas ? aula.turmas[0] : aula.Turma,
                 titulo: aula.titulo,
-                Materia: aula.Materia,
+                materias: aula.materias || aula.Materia, // Prioriza campo novo 'materias'
+                Materia: aula.materias || aula.Materia, // Compatibilidade com campo antigo
                 DayAula: aula.DayAula,
                 Horario: aula.Horario,
                 DesAula: aula.DesAula,

@@ -24,6 +24,9 @@ export const getAula = async (req, res) => {
             // Adiciona compatibilidade com o novo formato
             cursos: aula.cursos || (aula.curso ? [aula.curso] : []),
             turmas: aula.turmas || (aula.Turma ? [aula.Turma] : []),
+            // Compatibilidade para matérias
+            materias: aula.materias || aula.Materia,
+            Materia: aula.materias || aula.Materia, // Mantém campo antigo para compatibilidade
         };
 
         return res.status(200).json(resposta);

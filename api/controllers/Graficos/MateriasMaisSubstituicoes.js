@@ -14,7 +14,11 @@ export const getMateriasMaisSubstituicoes = async (req, res) => {
 
         // Agrupa as matérias e conta o total de aulas por matéria
         const materias = aulas.reduce((acc, aula) => {
-            acc[aula.Materia] = (acc[aula.Materia] || 0) + 1;
+            // Compatibilidade com campo novo 'materias' e antigo 'Materia'
+            const materia = aula.materias || aula.Materia;
+            if (materia) {
+                acc[materia] = (acc[materia] || 0) + 1;
+            }
             return acc;
         }, {});
 

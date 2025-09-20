@@ -39,7 +39,8 @@ export const getAulas = async (req, res) => {
                 // Mantém compatibilidade com formato antigo para o frontend
                 curso: aula.cursos ? aula.cursos[0] : aula.curso,
                 Turma: aula.turmas ? aula.turmas[0] : aula.Turma,
-                Materia: aula.Materia,
+                materias: aula.materias || aula.Materia, // Prioriza campo novo 'materias'
+                Materia: aula.materias || aula.Materia, // Compatibilidade com campo antigo
                 professor: aula.professor || "Não informado",
                 // Informações sobre conclusão por turma
                 turmasConcluidas: turmasConcluidas,
