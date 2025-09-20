@@ -44,6 +44,22 @@ export const createAula = async (req, res) => {
       }
     }
 
+    // Processa materias - deve ser sempre uma string simples, nunca array
+    if (req.body.materias && typeof req.body.materias === "string") {
+      try {
+        const parsedMaterias = JSON.parse(req.body.materias);
+        // Se for array, retorna erro - não é permitido
+        if (Array.isArray(parsedMaterias)) {
+          return res.status(400).json({ 
+            error: "Cada aula deve ter apenas uma matéria. Envie como string simples, não como array." 
+          });
+        }
+        req.body.materias = parsedMaterias;
+      } catch {
+        // Se não conseguir fazer parse, mantém como string (correto)
+      }
+    }
+
     // Definição do esquema de validação
     const schema = yup.object().shape({
       anoEscolar: yup.string().required(),
@@ -54,7 +70,8 @@ export const createAula = async (req, res) => {
       Turma: yup.mixed().test('turma-validation', 'Turma deve ser uma string ou array de strings', function(value) {
         return typeof value === 'string' || (Array.isArray(value) && value.every(item => typeof item === 'string'));
       }).required(),
-      Materia: yup.string().required(),
+      Materia: yup.string().optional(), // Campo antigo, opcional para compatibilidade
+      materias: yup.string().optional(), // Sempre uma única matéria (string)
       DayAula: yup.string().required(),
       Horario: yup.string().nullable(),
       DesAula: yup.string().nullable(),
@@ -78,7 +95,8 @@ export const createAula = async (req, res) => {
       curso,
       titulo,
       Turma,
-      Materia,
+      Materia, // Campo antigo
+      materias, // Campo novo
       DayAula,
       Horario,
       DesAula,
@@ -92,12 +110,15 @@ export const createAula = async (req, res) => {
     const cursosArray = Array.isArray(curso) ? curso : [curso];
     const turmasArray = Array.isArray(Turma) ? Turma : [Turma];
 
+    // Determina as matérias - prioriza campo novo 'materias', senão usa 'Materia'
+    const materiasValue = materias || Materia;
+
     const aulaData = {
       anoEscolar,
       cursos: cursosArray, // Mudou de 'curso' para 'cursos' (array)
       turmas: turmasArray, // Mudou de 'Turma' para 'turmas' (array)
       titulo,
-      Materia,
+      materias: materiasValue, // Sempre uma única matéria (string)
       DayAula,
       Horario,
       DesAula,
