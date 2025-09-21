@@ -5,7 +5,7 @@ import analytics from "../../../utils/segment.js";
 export const concluirAula = async (req, res) => {
     try {
         const db = await getDb();
-        const { turma } = req.body; // turma específica para concluir (opcional)
+        const { turma, professorConclusao } = req.body; // turma específica e nome de quem concluiu
         
         // Primeiro busca a aula para ter informações completas
         const aula = await db.collection("aulas").findOne({ _id: new ObjectId(req.params.id) });
@@ -41,13 +41,17 @@ export const concluirAula = async (req, res) => {
             
             updateData = {
                 turmasConcluidas: novasTurmasConcluidas,
-                concluida: novasTurmasConcluidas.length === turmasAula.length // true se TODAS estão concluídas
+                concluida: novasTurmasConcluidas.length === turmasAula.length, // true se TODAS estão concluídas
+                professorConclusao: professorConclusao || aula.professor, // Nome de quem concluiu
+                dataConclusao: new Date().toISOString() // Data/hora da conclusão
             };
         } else {
             // Conclusão total (todas as turmas)
             updateData = {
                 turmasConcluidas: turmasAula,
-                concluida: true
+                concluida: true,
+                professorConclusao: professorConclusao || aula.professor, // Nome de quem concluiu
+                dataConclusao: new Date().toISOString() // Data/hora da conclusão
             };
         }
 
@@ -69,21 +73,25 @@ export const concluirAula = async (req, res) => {
                 turmasConcluidas: updateData.turmasConcluidas,
                 concluida: updateData.concluida,
                 professor: aula.professor,
+                professorConclusao: updateData.professorConclusao,
+                dataConclusao: updateData.dataConclusao,
                 timestamp: new Date().toISOString(),
             },
         });
 
         return res.status(200).json({ 
             message: turma 
-                ? `Aula concluída para a turma ${turma}!` 
-                : "Aula concluída para todas as turmas!",
+                ? `Aula concluída para a turma ${turma} por ${updateData.professorConclusao}!` 
+                : `Aula concluída para todas as turmas por ${updateData.professorConclusao}!`,
             aula: {
                 id: req.params.id,
                 titulo: aula.titulo,
                 cursos: aula.cursos || (aula.curso ? [aula.curso] : []),
                 turmas: turmasAula,
                 turmasConcluidas: updateData.turmasConcluidas,
-                concluida: updateData.concluida
+                concluida: updateData.concluida,
+                professorConclusao: updateData.professorConclusao,
+                dataConclusao: updateData.dataConclusao
             }
         });
     } catch (err) {
